@@ -47,7 +47,7 @@ namespace SpeechUdyr
 
             Game.PrintChat("<font color='#FFFFCC'>UdyrSpeech</font> - by Maufeat");
 
-            speechList.Add(new string[] { "tiger", "teiger", "turtle", "bear", "phoenix", "recall", "beer", "flash", "smite", "ghost", "ignite", "teleport"});
+            speechList.Add(new string[] { "tiger", "teiger", "turtle", "bear", "phoenix", "recall", "beer", "flash", "smite", "ghost", "ignite", "tele", "teleport"});
             gr = new Grammar(new GrammarBuilder(speechList));
 
             
@@ -60,7 +60,7 @@ namespace SpeechUdyr
             F = ObjectManager.Player.GetSpellSlot("SummonerFlash");
             I = ObjectManager.Player.GetSpellSlot("SummonerIgnite");
             H = ObjectManager.Player.GetSpellSlot("SummonerHeal");
-            G = ObjectManager.Player.GetSpellSlot("SummonerGhost");
+            G = ObjectManager.Player.GetSpellSlot("SummonerHaste");
             S = ObjectManager.Player.GetSpellSlot("SummonerSmite");
             T = ObjectManager.Player.GetSpellSlot("SummonerTeleport");
 
@@ -218,7 +218,7 @@ namespace SpeechUdyr
                     }
                     else if (_selectedIgniteTarget == null)
                     {
-                        Message("No Smite Target!");
+                        Message("No Teleport Target!");
                     }
                     break;
                 default:
