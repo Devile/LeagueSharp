@@ -30,8 +30,8 @@ namespace SpeechUdyr
         static SpellSlot I;
         static SpellSlot S;
         static SpellSlot H;
-        static SpellSlot B;
         static SpellSlot G;
+        static SpellSlot T;
 
         static Timer speechTimer;
         static bool wantSpeech;
@@ -39,6 +39,7 @@ namespace SpeechUdyr
 
         static Obj_AI_Base _selectedSmiteTarget;
         static Obj_AI_Base _selectedIgniteTarget;
+        static Obj_AI_Base _selectedTeleportTarget;
 
         static void Main(string[] args)
         {
@@ -46,7 +47,7 @@ namespace SpeechUdyr
 
             Game.PrintChat("<font color='#FFFFCC'>UdyrSpeech</font> - by Maufeat");
 
-            speechList.Add(new string[] { "tiger", "teiger", "turtle", "bear", "phoenix", "recall", "beer", "flash", "smite", "ghost", "ignite"});
+            speechList.Add(new string[] { "tiger", "teiger", "turtle", "bear", "phoenix", "recall", "beer", "flash", "smite", "ghost", "ignite", "teleport"});
             gr = new Grammar(new GrammarBuilder(speechList));
 
             
@@ -60,8 +61,8 @@ namespace SpeechUdyr
             I = ObjectManager.Player.GetSpellSlot("SummonerIgnite");
             H = ObjectManager.Player.GetSpellSlot("SummonerHeal");
             G = ObjectManager.Player.GetSpellSlot("SummonerGhost");
-            B = ObjectManager.Player.GetSpellSlot("SummonerBarrier");
             S = ObjectManager.Player.GetSpellSlot("SummonerSmite");
+            T = ObjectManager.Player.GetSpellSlot("SummonerTeleport");
 
             speechTimer = new Timer(TimerCallBack, null, 0, menu.Item("speechinterval").GetValue<Slider>().Value);
             Game.OnGameUpdate += Game_OnGameUpdate;
@@ -195,6 +196,31 @@ namespace SpeechUdyr
                     }
                     ObjectManager.Player.SummonerSpellbook.CastSpell(G);
                     break;
+                case "teleport":
+                    if (!IsReadyTeleport())
+                    {
+                        Message("Teleport not ready!");
+                        return;
+                    }
+                    _selectedTeleportTarget = null;
+                    foreach (var enemy in
+                        ObjectManager.Get<Obj_AI_Turret>()
+                            .Where(minion => minion.Health > 0.1)
+                            .OrderByDescending(m => m.Distance(Game.CursorPos))
+                            .Where(target => target.Distance(Game.CursorPos) < 200))
+                    {
+                        _selectedTeleportTarget = enemy;
+                    }
+                    if (_selectedTeleportTarget != null)
+                    {
+                        ObjectManager.Player.SummonerSpellbook.CastSpell(T, _selectedTeleportTarget);
+                        _selectedTeleportTarget = null;
+                    }
+                    else if (_selectedIgniteTarget == null)
+                    {
+                        Message("No Smite Target!");
+                    }
+                    break;
                 default:
                     Game.PrintChat(e.Result.Text);
                     break;
@@ -219,6 +245,10 @@ namespace SpeechUdyr
         static bool IsReadyIgnite()
         {
             return (I != SpellSlot.Unknown && ObjectManager.Player.SummonerSpellbook.CanUseSpell(I) == SpellState.Ready);
+        }
+        static bool IsReadyTeleport()
+        {
+            return (T != SpellSlot.Unknown && ObjectManager.Player.SummonerSpellbook.CanUseSpell(T) == SpellState.Ready);
         }
     }
 }
