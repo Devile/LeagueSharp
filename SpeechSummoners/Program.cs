@@ -29,6 +29,7 @@ namespace SpeechSummoners
         static SpellSlot G;
         static SpellSlot T;
         static SpellSlot E;
+        static SpellSlot B;
 
         static Timer speechTimer;
         static bool wantSpeech;
@@ -43,7 +44,7 @@ namespace SpeechSummoners
         {
             Game.PrintChat("<font color='#CCFFFF'>SpeechSummoners</font> - by Maufeat");
             
-            speechList.Add(new string[] { "recall", "flash", "smite", "ghost", "ignite", "teleport", "heal"});
+            speechList.Add(new string[] { "recall", "flash", "smite", "smeit", "ghost", "ignite", "ignight", "teleport", "heal", "barrier", "exhaust"});
             gr = new Grammar(new GrammarBuilder(speechList));
 
             menu = new Menu("Summoner Speech", "udyr", true);
@@ -53,12 +54,13 @@ namespace SpeechSummoners
             menu.AddToMainMenu();
 
             F = ObjectManager.Player.GetSpellSlot("SummonerFlash");
-            I = ObjectManager.Player.GetSpellSlot("SummonerIgnite");
+            I = ObjectManager.Player.GetSpellSlot("SummonerDot");
             H = ObjectManager.Player.GetSpellSlot("SummonerHeal");
             G = ObjectManager.Player.GetSpellSlot("SummonerHaste");
             S = ObjectManager.Player.GetSpellSlot("SummonerSmite");
             T = ObjectManager.Player.GetSpellSlot("SummonerTeleport");
-            E = ObjectManager.Player.GetSpellSlot("SummonerExhuast");
+            E = ObjectManager.Player.GetSpellSlot("SummonerExhaust");
+            B = ObjectManager.Player.GetSpellSlot("SummonerBarrier");
 
             speechTimer = new Timer(TimerCallBack, null, 0, menu.Item("speechinterval").GetValue<Slider>().Value);
             Game.OnGameUpdate += Game_OnGameUpdate;
@@ -101,6 +103,7 @@ namespace SpeechSummoners
                     ObjectManager.Player.SummonerSpellbook.CastSpell(F, position);
                     break;
                 case "smite":
+                case "smeit":
                     if (!IsReadySmite())
                     {
                         Message("Smite not ready!");
@@ -126,6 +129,7 @@ namespace SpeechSummoners
                     }
                     break;
                 case "ignite":
+                case "ignight":
                     if (!IsReadyIgnite())
                     {
                         Message("Ignite not ready!");
@@ -147,7 +151,7 @@ namespace SpeechSummoners
                     }
                     else if (_selectedIgniteTarget == null)
                     {
-                        Message("No Smite Target!");
+                        Message("No Ignite Target!");
                     }
                     break;
                 case "ghost":
@@ -227,6 +231,14 @@ namespace SpeechSummoners
                         Message("No Exhaust Target!");
                     }
                     break;
+                case "barrier":
+                    if (!IsReadyBarrier())
+                    {
+                        Message("Barrier not ready!");
+                        return;
+                    }
+                    ObjectManager.Player.SummonerSpellbook.CastSpell(B);
+                    break;
                 default:
                     Game.PrintChat(e.Result.Text);
                     break;
@@ -281,6 +293,10 @@ namespace SpeechSummoners
         static bool IsReadyExhaust()
         {
             return (E != SpellSlot.Unknown && ObjectManager.Player.SummonerSpellbook.CanUseSpell(E) == SpellState.Ready);
+        }
+        static bool IsReadyBarrier()
+        {
+            return (B != SpellSlot.Unknown && ObjectManager.Player.SummonerSpellbook.CanUseSpell(B) == SpellState.Ready);
         }
     }
 }
