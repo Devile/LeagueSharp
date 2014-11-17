@@ -31,7 +31,7 @@ namespace AutoFollowScript
         static void Main(string[] args)
         {
             Game.PrintChat("<font color='#66FFFF'>AutoFollow</font> - by Maufeat");
-            //Make the menu
+
             menu = new Menu("Auto Follow", "AutoFollow", true);
             //Make the submenu
             menu.AddSubMenu(new Menu("Debug Message", "Debug"));
@@ -43,13 +43,8 @@ namespace AutoFollowScript
 
             GetTowers(myHero.Team);
             GetAllies(myHero.Team);
-            /*allySpawn = ObjectManager.Get<Obj_SpawnPoint>().FirstOrDefault(s => s.IsAlly);
-            if (allySpawn == null)
-            {
-                Game.PrintChat("NULL");
-            } else
-                Game.PrintChat("NOT NULL");*/
-            //enemySpawn = ObjectManager.Get<Obj_SpawnPoint>().FirstOrDefault(s => s.IsEnemy);
+            Vector3 _enemySpawnPos = ObjectManager.Get<GameObject>().First(x => x.Type == GameObjectType.obj_SpawnPoint && x.Team != ObjectManager.Player.Team).Position;
+            Game.PrintChat(_enemySpawnPos.To2D().ToString());
             following = AllAllies[1];
             try
             {
@@ -68,9 +63,10 @@ namespace AutoFollowScript
             {
                 Game.PrintChat(myState+"");
             }
-            if (following == null)
+            if (myHero.IsDead && following == null)
             {
-                Game.PrintChat("Following is NULL");
+                following = AllAllies[1];
+                myState = 0;
             }
             if (following != null && myHero.IsDead == false)
             {
@@ -96,7 +92,7 @@ namespace AutoFollowScript
                     }
                 } else if (myState == 8) // IN_TOWER_RADIUS
                 {
-                    //
+                    myState = 0;
                 }
             }
         }
